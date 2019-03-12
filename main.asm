@@ -1,114 +1,151 @@
-	.file	"main.cpp"
+	.file	"main.c"
 	.intel_syntax noprefix
 	.text
 	.p2align 4
-	.globl	_Z5mergePjS_j
-	.type	_Z5mergePjS_j, @function
-_Z5mergePjS_j:
-.LFB7375:
+	.globl	bitonic
+	.type	bitonic, @function
+bitonic:
+.LFB5470:
+	.cfi_startproc
+	vmovaps	xmm2, XMMWORD PTR [rdi+16]
+	vmovaps	xmm0, XMMWORD PTR [rdi]
+	vminps	xmm1, xmm0, xmm2
+	vmaxps	xmm0, xmm0, xmm2
+	vshufps	xmm2, xmm1, xmm0, 5
+	vshufps	xmm0, xmm1, xmm0, 175
+	vmovaps	XMMWORD PTR [rdi], xmm2
+	vmovaps	XMMWORD PTR [rdi+16], xmm0
+	ret
+	.cfi_endproc
+.LFE5470:
+	.size	bitonic, .-bitonic
+	.p2align 4
+	.globl	rnd
+	.type	rnd, @function
+rnd:
+.LFB5471:
 	.cfi_startproc
 	push	r12
 	.cfi_def_cfa_offset 16
 	.cfi_offset 12, -16
-	mov	r12, rdi
-	mov	edi, 1024
+	mov	edi, 128
 	push	rbp
 	.cfi_def_cfa_offset 24
 	.cfi_offset 6, -24
-	mov	rbp, rsi
-	mov	esi, edx
 	push	rbx
 	.cfi_def_cfa_offset 32
 	.cfi_offset 3, -32
-	mov	rbx, rsi
-	sal	rsi, 2
-	call	aligned_alloc
-	xor	r8d, r8d
-	xor	ecx, ecx
-	xor	edx, edx
-	jmp	.L2
-	.p2align 4,,10
-	.p2align 3
-.L3:
-	cmp	ecx, ebx
-	jnb	.L8
-	mov	r10d, ecx
-	mov	r10d, DWORD PTR [rbp+0+r10*4]
-	mov	r9d, r8d
-	mov	DWORD PTR [rax+r9*4], r10d
-	inc	ecx
-.L6:
-	inc	r8d
-.L2:
-	cmp	edx, ebx
-	jnb	.L3
-	mov	esi, edx
-	lea	rdi, [r12+rsi*4]
-	mov	esi, r8d
-	lea	rsi, [rax+rsi*4]
-	cmp	ecx, ebx
-	jnb	.L4
-	mov	r9d, DWORD PTR [rdi]
-	mov	edi, ecx
-	mov	edi, DWORD PTR [rbp+0+rdi*4]
-	cmp	r9d, edi
-	jnb	.L5
-	mov	DWORD PTR [rsi], r9d
-	inc	edx
-	jmp	.L6
+	call	malloc
+	mov	r12, rax
+	mov	rbx, rax
+	lea	rbp, [rax+128]
 	.p2align 4,,10
 	.p2align 3
 .L4:
-	mov	edi, DWORD PTR [rdi]
-	inc	edx
-	mov	DWORD PTR [rsi], edi
-	jmp	.L6
-	.p2align 4,,10
-	.p2align 3
-.L5:
-	mov	DWORD PTR [rsi], edi
-	inc	ecx
-	jmp	.L6
-	.p2align 4,,10
-	.p2align 3
-.L8:
+	call	rand
+	vxorps	xmm0, xmm0, xmm0
+	vcvtsi2ss	xmm0, xmm0, eax
+	add	rbx, 4
+	vmovss	DWORD PTR [rbx-4], xmm0
+	cmp	rbx, rbp
+	jne	.L4
 	pop	rbx
 	.cfi_def_cfa_offset 24
 	pop	rbp
 	.cfi_def_cfa_offset 16
+	mov	rax, r12
 	pop	r12
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE7375:
-	.size	_Z5mergePjS_j, .-_Z5mergePjS_j
+.LFE5471:
+	.size	rnd, .-rnd
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.LC0:
+	.string	"%d, "
+.LC1:
+	.string	"]"
+	.text
+	.p2align 4
+	.globl	printList
+	.type	printList, @function
+printList:
+.LFB5472:
+	.cfi_startproc
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	mov	ebp, esi
+	push	rbx
+	.cfi_def_cfa_offset 24
+	.cfi_offset 3, -24
+	mov	rbx, rdi
+	mov	edi, 91
+	sub	rsp, 8
+	.cfi_def_cfa_offset 32
+	call	putchar
+	test	ebp, ebp
+	je	.L8
+	lea	eax, [rbp-1]
+	lea	rbp, [rbx+4+rax*4]
+	.p2align 4,,10
+	.p2align 3
+.L9:
+	vcvttss2si	esi, DWORD PTR [rbx]
+	mov	edi, OFFSET FLAT:.LC0
+	xor	eax, eax
+	add	rbx, 4
+	call	printf
+	cmp	rbp, rbx
+	jne	.L9
+.L8:
+	add	rsp, 8
+	.cfi_def_cfa_offset 24
+	pop	rbx
+	.cfi_def_cfa_offset 16
+	mov	edi, OFFSET FLAT:.LC1
+	pop	rbp
+	.cfi_def_cfa_offset 8
+	jmp	puts
+	.cfi_endproc
+.LFE5472:
+	.size	printList, .-printList
 	.section	.text.startup,"ax",@progbits
 	.p2align 4
 	.globl	main
 	.type	main, @function
 main:
-.LFB7376:
+.LFB5473:
 	.cfi_startproc
-	sub	rsp, 40
-	.cfi_def_cfa_offset 48
-	movabs	rax, 8589934593
-	mov	QWORD PTR [rsp], rax
-	movabs	rax, 25769803779
-	mov	QWORD PTR [rsp+8], rax
-	movabs	rax, 17179869186
-	mov	QWORD PTR [rsp+16], rax
-	lea	rsi, [rsp+16]
-	movabs	rax, 34359738375
-	mov	rdi, rsp
-	mov	edx, 4
-	mov	QWORD PTR [rsp+24], rax
-	call	_Z5mergePjS_j
+	push	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
 	xor	eax, eax
-	add	rsp, 40
+	call	rnd
+	mov	rbp, rax
+	mov	rdi, rax
+	mov	esi, 16
+	call	printList
+	lea	rdi, [rbp+64]
+	mov	esi, 16
+	call	printList
+	vmovaps	xmm2, XMMWORD PTR [rbp+64]
+	vmovaps	xmm0, XMMWORD PTR [rbp+0]
+	mov	rdi, rbp
+	vminps	xmm1, xmm0, xmm2
+	vmaxps	xmm0, xmm0, xmm2
+	mov	esi, 32
+	vshufps	xmm2, xmm1, xmm0, 5
+	vshufps	xmm0, xmm1, xmm0, 175
+	vmovaps	XMMWORD PTR [rbp+0], xmm2
+	vmovaps	XMMWORD PTR [rbp+64], xmm0
+	call	printList
+	xor	eax, eax
+	pop	rbp
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE7376:
+.LFE5473:
 	.size	main, .-main
 	.ident	"GCC: (GNU) 9.0.1 20190213 (experimental)"
 	.section	.note.GNU-stack,"",@progbits
