@@ -3,7 +3,7 @@
 #include <gmodule.h>
 #include <omp.h>
 
-#define SIZE 1024 * 1024 * 32
+#define SIZE 1024 * 1024 * 512
 #define THREADS 16
 
 void prnt(float *data, unsigned size) {
